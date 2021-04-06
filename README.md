@@ -1,5 +1,5 @@
 - 👋 Hi, I’m @DreshtiShah
-- 👀 I’m interested in Analyics
+- 👀 I’m interested in automation, analysis and visualisation
 - 🌱 I’m currently learning data analyst and business intelligence...
 
 <!---
