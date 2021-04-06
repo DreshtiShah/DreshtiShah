@@ -1,0 +1,96 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+%matplotlib inline
+print("Libraries imported successfully")
+url = "http://bit.ly/w-data"
+df = pd.read_csv(url)
+df.head()
+df.isnull().sum()
+df.describe()
+df.info()
+df.corr()
+This shows higher corelation between hours and scores
+
+Data Visualisation
+# visualising with Line plot
+plt.style.use("ggplot")
+df.plot(kind="line")
+plt.title("Hours vs Percentage")
+plt.xlabel("Hrs_studied")
+plt.ylabel("Percentage_Score")
+plt.show()
+# viusualising with area plot
+
+xmin = min(df.Hours)
+xmax = max(df.Hours)
+df.plot(kind = "area",alpha=0.5, stacked=True, figsize=(10,5), xlim=(xmin, xmax))
+plt.title("Hours vs Score", size=15)
+plt.xlabel("Hours", size=15)
+plt.ylabel("Score", size=15)
+plt.show()
+
+# visualising with scatter plot
+
+df.plot(kind= "scatter", x= "Hours", y= "Scores", color = "r", figsize=(8,5))
+plt.title("Hours vs Percentage")
+plt.xlabel("Hours Studied")
+plt.ylabel("Percentage Score")
+plt.show()
+
+By visualisation we come to know that this problem can be easily solved by linear regression
+
+Modelling the data
+x = np.asanyarray(df[["Hours"]])
+y = np.asanyarray(df["Scores"])
+
+#splitting data in train set and test set
+
+train_x, test_x, train_y, test_y = train_test_split(x,y,test_size=0.2, random_state=2)
+regressor = LinearRegression()
+regressor.fit(train_x, train_y)
+
+#print("Training_completed\n")
+print("Training completed\n")
+print("Coefficients: ", regressor.coef_)
+print("Tntercept: ", regressor.intercept_)
+#in single linear regression we can also plot the fit line
+
+df.plot(kind="scatter", x="Hours", y="Scores", figsize=(10,5), color="b")
+plt.plot(train_x, regressor.coef_[0]*train_x + regressor.intercept_, color="g")
+plt.title("Hours vs Percentage")
+plt.xlabel("Hours Studied")
+plt.ylabel("Percentage Score")
+plt.show()
+
+Evaluation of the Model
+# using metrics to find mean absolute error and R2 to see the accuracy
+from sklearn import metrics
+from sklearn.metrics import r2_score
+
+y_pred = regressor.predict(test_x)
+print("Mean Absolute error : {}".format(metrics.mean_absolute_error(y_pred, test_y)))
+print("R2-score: %.2f" %r2_score(y_pred, test_y))
+# using metrics to find mean absolute error and R2 to see the accuracy
+from sklearn import metrics
+from sklearn.metrics import r2_score
+
+y_pred = regressor.predict(test_x)
+print("Mean Absolute error : {}".format(metrics.mean_absolute_error(y_pred, test_y)))
+print("R2-score: %.2f" %r2_score(y_pred, test_y))
+Mean Absolute error: It is mean of absolute value of errors r2-Score: it is not an error but it is the metric for accuracy for the model.Higher the r2 value higher is the accuracy of model. Best score is 1
+
+# comparing actaul vs predict
+df2 = pd.DataFrame({"Actual": test_y, "Predicted": y_pred})
+df2
+Predict the Score witth the single input value
+hours=9.25
+predicted_score = regressor.predict([[hours]])
+
+print(f'No.of hours = {hours}')
+print(f"predicted Score {predicted_score[0]}")
+
+
+
