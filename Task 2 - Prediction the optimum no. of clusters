@@ -1,0 +1,70 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn import datasets
+import seaborn as sns
+
+iris = datasets.load_iris()
+iris_df = pd.DataFrame(iris.data, columns = iris.feature_names)
+iris_df.head()
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn import datasets
+
+iris = pd.read_csv("D:\\Dreshti\\PG Diploma in Data Science\\Internship\\The Spark Foundation\\Task 2\\Iris.csv")
+iris.head()
+iris_data = iris.drop(['Id'], axis = 1)
+iris_data.tail()
+iris_data.shape
+
+x = iris_data.iloc[:,[0,1,2,3]].values
+x
+iris.info()
+iris_outcome = pd.crosstab(index=iris_data["Species"], columns = "count")
+iris_outcome
+sns.set()
+sns.pairplot(iris_data[["SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm", "Species"]], hue="Species", diag_kind ="kde")
+plt.show()
+sns.boxplot(x="Species", y = "PetalLengthCm", data = iris)
+plt.show()
+from sklearn.cluster import KMeans
+wcss = []
+
+for i in range(1,11):
+    kmeans = KMeans(n_clusters =i, init = "k-means++",max_iter =300, n_init = 10, random_state = 0)
+    kmeans.fit(x)
+    wcss.append(kmeans.inertia_)
+plt.figure(figsize=(10,6))
+plt.plot(range(1,11),wcss, marker="o")
+plt.title("The Elbow Method")
+plt.xlabel("Number of clusters")
+plt.ylabel("WCSS")
+plt.show()
+km = KMeans(n_clusters = 3, init = "k-means++", max_iter = 300, n_init = 10, random_state = 0)
+ykmeans = km.fit_predict(x)
+ykmeans
+km.cluster_centers_[:, 0]
+km.cluster_centers_[:,1]
+plt.figure(figsize=(6,6))
+plt.scatter(x[ykmeans==0,0], x[ykmeans ==0,1], s=100, c="yellow", marker="^", label = "Iris-setosa")
+plt.scatter(x[ykmeans==1,0], x[ykmeans ==1,1], s=100, c="yellowgreen", marker="s", label = "Iris-versicolour")
+plt.scatter(x[ykmeans==2,0], x[ykmeans ==2,1], s=100, c="blue", marker="o", label = "Iris-virginica")
+
+# Plotiing centroids of the clusters
+plt.scatter(km.cluster_centers_[:,0], km.cluster_centers_[:,1], s =100, c="red", label = "Centroids", marker = "X")
+plt.title("Iris Data Optimum clusters", fontsize=15)
+plt.legend()
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
