@@ -1,0 +1,266 @@
+# GRIP - The Sparks Foundation
+
+### Data Science and Business Analytics internship
+
+#### Author - Dreshti M Shah
+
+### Task 3 - Exploratory Data Analysis - Retail
+
+#### Input Dataset (SampleSuperstore):
+
+    https://bit.ly/3i4rbWl
+
+#### Required Output:
+
+    1. Find out weak areas where you can work to make more profit
+    2. What all business problems you can derive by exploring the data as business manager? 
+
+#### Expected Solution:
+
+    Need to perform Exploratory Data Analysis and create dashboards
+
+#### Step 1: Import data and libraries
+
+import pandas as pd
+pd.set_option("display.max_columns",100)
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set()
+import warnings
+warnings.filterwarnings("ignore")
+%matplotlib inline
+
+# Let's read data from superstore.csv
+df = pd.read_csv("D:\\Dreshti\\PG Diploma in Data Science\\Internship\\The Spark Foundation\\Task 3\\SampleSuperstore.csv")
+df.head()
+
+##### Step 2: Understanding of data
+
+df.describe()
+
+df.info()
+
+df.columns
+
+df["Ship Mode"].unique()
+
+df["Segment"].unique()
+
+df["Country"].unique()
+
+df["City"].unique()
+
+df["Region"].unique()
+
+df["Category"].unique()
+
+df["Sub-Category"].unique()
+
+list1 = df.columns
+
+list1
+
+df=df.copy()
+
+# Understanderstand the data characteristics
+def data_characteristics(dataset):
+# Shape of dataset
+    print("Shape of dataset : {}".format(dataset.shape))
+    print("Number of Columns in the dataset : {}".format(dataset.shape[1]))
+    print("Number of Rows in the dataset : {}".format(dataset.shape[0]))
+    print("-"*30)
+# No. of numerical and categorical features
+    numeric_features = dataset.select_dtypes(include =[np.number])
+    categoric_features = dataset.select_dtypes(exclude =[np.number])
+    print("Number of Numerical Features :{}".format(numeric_features.shape[1]))
+    print("Number of Categorical Features :{}".format(categoric_features.shape[1]))
+    print("-"*30)
+#Unique values
+    print("No. of unique values :{}".format(dataset.nunique()))
+#No. of non - nulls
+    print("No. of NO-NANs : {}".format(dataset.count()))
+    print("-"*30)
+#Understanding the dataset
+    print("Information of the Dataset :{}".format(dataset.info(verbose = False, memory_usage = "deep")))
+    print("-"*30)
+#dataset characteristics
+print(data_characteristics(df))
+
+# Missing Values
+
+df.isnull().sum()
+
+Data has no null values
+
+## For null values
+plt.figure(figsize=(8,8))
+sns.heatmap(df.isnull())
+plt.show()
+
+Above heatmap represents that there is no null values in the dataset
+
+sns.pairplot(df)
+plt.show()
+
+Pairplot is being used to represent the relationship between the features. 
+For eg. Here we can see the Postal code and Profit relationship , sales and quantity relationship
+
+#### Check for Outliers
+
+sns.boxplot(x=df["Postal Code"])
+plt.show()
+
+sns.boxplot(x=df["Sales"])
+plt.show()
+
+sns.boxplot(x=df["Quantity"])
+plt.show()
+
+sns.boxplot(x=df["Discount"])
+plt.show()
+
+sns.boxplot(x=df["Profit"])
+plt.show()
+
+# Checking for Duplicates values
+df.duplicated().sum()
+
+df.drop_duplicates(subset = None, keep ="first", inplace = True)
+df.duplicated().sum()
+
+#Plt correlation matrix
+corr = df.corr()
+plt.figure(figsize=(10,7))
+sns.heatmap(corr, annot = True)
+plt.show()
+
+In this dataset postal code and profit is negatively correlated and discount and postal code have positive correlation whereas sales and discount are negativley correalion and postal code and quantity are positively correlated
+
+sns.set_style("whitegrid")
+sns.countplot(x="Segment", data = df, palette = "rainbow")
+plt.title("Segmentwise count")
+plt.show()
+
+In our data segmentwise consumer gives highest count it means the consumer share higher profit among corporate segment and home office 
+
+df["Category"].unique()
+
+sns.set_style("whitegrid")
+sns.countplot(x="Category", data=df, palette = "rainbow")
+plt.show()
+
+Categorywise office supplies gives more profit 
+
+plt.figure(figsize=(12,10))
+df["Sub-Category"].value_counts().plot.pie(autopct="%1.1f%%")
+plt.show()
+
+# Let's visualize the state column from the dataset
+plt.figure(figsize=(20,10))
+sns.set_style("whitegrid")
+sns.countplot(x="State", data=df, palette = "rainbow", order =df["State"].value_counts().index)
+plt.xticks(rotation=90)
+plt.show()
+
+From above graph it is easy to understand that company earns highest profit in state  California and least profit in North Dakota state has least profit and state West Virginia and Wyoming has no profit.
+So we need to look on that and make sure to earn profit from this states.
+
+# Shipping Mode vs Count
+sns.catplot("Ship Mode", data = df, hue="Segment", kind="count", palette="magma_r", aspect=1.5, height=7)
+plt.show()
+
+Here Standard class gives more profit comparatively other ship mode class
+
+### Most profitable categories
+
+# Category wise
+dfprofit = df.groupby("Category")["Profit"].sum().reset_index()
+print(dfprofit)
+plt.figure(figsize=(5,5))
+labels=dfprofit["Category"].unique()
+plt.pie(dfprofit["Profit"], autopct="%1.1f%%", labels=labels)
+
+plt.title("Distribution of profits categorywise", size = 20)
+plt.show()
+
+# Sub-Category wise
+dfprofit = df.groupby("Sub-Category")["Profit"].sum().reset_index()
+print(dfprofit)
+plt.figure(figsize=(10,10))
+labels=dfprofit["Sub-Category"].unique()
+plt.pie(dfprofit["Profit"], autopct="%1.1f%%", labels=labels, explode= (0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02))
+
+plt.title("Distribution of profits sub-categorywise", size = 30)
+plt.show()
+
+If we visualise the above grpah sub category share higher margin of profit
+
+# Top 10 Profitable Cities
+
+dftop10_cities = df.groupby("City")["Profit"].sum().reset_index().sort_values(by="Profit", ascending=False)
+dftop10_cities = dftop10_cities.head(10)
+dftop10_cities
+
+# Visualizing the Top 10 Profitable products
+
+sns.catplot("City", "Profit", data=dftop10_cities, kind="bar", aspect=1.5, height=9, palette="cubehelix_r")
+plt.title("Top 10 profitable cities", size  = 20)
+plt.xticks(size=15)
+plt.yticks(size=15)
+plt.ylabel("Comulative Profit", size=18)
+plt.xlabel("Cities", size=18)
+plt.show()
+
+# Top 10 Profitable state
+dftop10_States = df.groupby("State")["Profit"].sum().reset_index().sort_values(by="Profit", ascending=False)
+dftop10_States = dftop10_States.head(10)
+dftop10_States
+
+sns.catplot("State","Profit", data=dftop10_States, kind="bar", aspect=1.5, height=9, palette="gist_earth")
+plt.title("Top 10profitable states", size=20)
+plt.xticks(size=10)
+plt.yticks(size=10)
+plt.ylabel("Cumulative profit", size = 15)
+plt.xlabel("States",size=15)
+plt.show()
+
+df.columns
+
+df = df.copy()
+
+dftop_Region=df.groupby("Region")["Profit"].sum().reset_index().sort_values(by="Profit", ascending = False)
+dftop_Region=dftop_Region.head(10)
+dftop_Region
+
+# Visualizing top profitable region
+
+sns.catplot("Region","Profit", data = dftop_Region, kind = "bar", aspect=1.5, height=9,palette="cool")
+plt.title("Top Profitable region", size=20)
+plt.xticks(size=15)
+plt.yticks(size=15)
+plt.ylabel("Cumulative Profit", size=18)
+plt.xlabel("Region",size=18)
+plt.show()
+
+It can be visualised that WEST region is the highest profitable region
+
+#### Let's find the total profit and sales of the company
+
+sales = df["Sales"].sum()
+profit = df["Profit"].sum()
+print("Total Sales : {} USD".format(sales))
+print("Total Profit : {} USD".format(profit))
+
+plt.figure(figsize=(12,8))
+sns.regplot(df["Sales"],df["Profit"])
+plt.title("Sales vs Profit", size = 20)
+plt.show()
+
+From sales and profit we can clearly observe the positve in between, as the sales increases the profit also increases accordingly
+
+### Conclusion:
+
+We analyzed that some of the cities perform very bad in terms of providing profits we must look on that so that profit can be made. West and East Region share higher profit comparatively South and Central regions  
+
+### Thank You
